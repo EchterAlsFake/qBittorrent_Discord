@@ -1,4 +1,4 @@
-qBittorrent Discord RPC Integration
+qBittorrent Discord Integration
 ====================================
 
 Overview
