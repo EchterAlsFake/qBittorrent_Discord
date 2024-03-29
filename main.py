@@ -16,7 +16,6 @@ class QBittorrentDiscord:
         self.conf = ConfigParser()
         self.conf.read("config.ini")
         self.check_configuration_file()
-
         self.application_id = "1176525076703744090"
         self.image = "qbittorrent"  # Image for the Discord Bot
         self.uploading = None
@@ -29,6 +28,7 @@ class QBittorrentDiscord:
         self.qbt_client = None
         self.client = None
 
+        self.conf.read("config.ini")
         self.discord()
         self.server_configuration()
         self.menu()
@@ -76,8 +76,7 @@ class QBittorrentDiscord:
 
     @classmethod
     def write_configuration_file(cls):
-        default = """
-[Server]
+        default = """[Server]
 host = localhost
 port = 8080
 username = 
