@@ -1,9 +1,15 @@
-qBittorrent Discord Integration
-====================================
+<div align = center>
+<h1 align="center">qBittorrent Discord Integration</h1>
 
-Overview
---------
-This Python script integrates qBittorrent with Discord Rich Presence, displaying the number of torrents being uploaded or downloaded, and the version of qBittorrent being used.
+<img alt="GitHub all releases" src="https://img.shields.io/github/downloads/EchterAlsFake/qBittorrent_Discord/total?style=social&logo=github&logoColor=purple">
+
+</div>
+
+---
+**[<kbd><strong>&nbsp;<br>&nbsp;Download (v1.1)&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/releases/tag/1.1)** 
+**[<kbd><strong>&nbsp;<br>&nbsp;Screenshots&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/SCREENSHOTS.md)** 
+**[<kbd><strong>&nbsp;<br>&nbsp;Changelog&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/Porn_Fetch/blob/master/README/CHANGELOG.md)** 
+---
 
 Table of Contents
 -----------------
@@ -15,54 +21,29 @@ Table of Contents
 - [Credits](#credits)
 - [License](#license)
 
-Setup and Configuration
------------------------
-1. Install Required Libraries:
-   - pypresence
-   - colorama
-   - qbittorrentapi
 
-   Use the command: `pip install pypresence colorama qbittorrent-api`
+# Setup (qBittorrent)
 
-
-2. Configure qBittorrent WebUI:
+1. Configure qBittorrent WebUI:
    - Enable WebUI in qBittorrent settings.
-   - Note the host and port for the WebUI.
+   - Check the Box: "Bypass authentication for clients on localhost"
 
-Running the Script
-------------------
-1. Run the script.
-2. Enter the qBittorrent WebUI credentials.
-   - If 'Bypass Authentication for localhost' is enabled, press Enter for username and password.
-3. Enter the WebUI host and port (default: localhost and 8080).
 
-The script will connect to Discord and qBittorrent and start displaying the Rich Presence.
-
-Note
-----
-- The script updates Discord Rich Presence every 10 seconds.
-- The provided GitHub link in the Discord status is optional and can be removed.
-
-Downloads
----------
-
-**Downloads for Windows and Linux can be found in the [releases]()**
-
+# Running the script
+The script will guide you through the configuration and save your input for further runs. Don't worry, you can 
+always change everything back in the settings menu.
 
 
 # Credits
-
 * [qBittorrent API](https://github.com/rmartin16/qbittorrent-api)
 * [ChatGPT](https://chat.openai.com)
 
 # License
-
 Copyright (C) 2023 Johannes Habel
 <br>Licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 # Support
-
-If you want more features or you have any feedback, please let me know in the Discussions.
-<br>I don't care sooo much about this repo, so I'll be happy to hear your ideas :)
+If you want more features, or you have any feedback, please let me know in the Discussions.
+<br>I don't care so much about this repo, so I'll be happy to hear your ideas :)
 
 
