@@ -8,7 +8,7 @@
 ---
 **[<kbd><strong>&nbsp;<br>&nbsp;Download (v1.1)&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/releases/tag/1.1)** 
 **[<kbd><strong>&nbsp;<br>&nbsp;Screenshots&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/SCREENSHOTS.md)** 
-**[<kbd><strong>&nbsp;<br>&nbsp;Changelog&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/Porn_Fetch/blob/master/README/CHANGELOG.md)** 
+**[<kbd><strong>&nbsp;<br>&nbsp;Changelog&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/CHANGELOG.md)** 
 ---
 
 Table of Contents
