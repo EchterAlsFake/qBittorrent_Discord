@@ -11,17 +11,6 @@
 **[<kbd><strong>&nbsp;<br>&nbsp;Changelog&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/CHANGELOG.md)** 
 ---
 
-Table of Contents
------------------
-
-- [Setup and Configuration](#setup-and-configuration)
-- [Running the Script](#running-the-script)
-- [Note](#note)
-- [Downloads](#downloads)
-- [Credits](#credits)
-- [License](#license)
-
-
 # Setup (qBittorrent)
 
 1. Configure qBittorrent WebUI:
