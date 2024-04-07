@@ -122,6 +122,7 @@ get asked for Username and Password. {Fore.RESET}
 
             with open("config.ini", "w") as config:
                 self.conf.write(config)
+                print("Wrote to configuration file")
 
         else:
             host = self.conf.get("Server", "host")
