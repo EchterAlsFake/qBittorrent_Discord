@@ -28,6 +28,8 @@ class QBittorrentDiscord:
         self.qbt_client = None
         self.client = None
 
+        del self.conf
+        self.conf = ConfigParser()
         self.conf.read("config.ini")
         self.discord()
         self.server_configuration()
