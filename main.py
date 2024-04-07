@@ -18,8 +18,8 @@ class QBittorrentDiscord:
         self.check_configuration_file()
         self.application_id = "1176525076703744090"
         self.image = "qbittorrent"  # Image for the Discord Bot
-        self.uploading = None
-        self.downloading = None
+        self.uploading = 0
+        self.downloading = 0
         self.update_delay = None
         self.username = None
         self.password = None
