@@ -6,10 +6,13 @@
 </div>
 
 ---
-**[<kbd><strong>&nbsp;<br>&nbsp;Download (v1.1)&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/releases/tag/1.1)** 
+**[<kbd><strong>&nbsp;<br>&nbsp;Download (v1.0)&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/releases/tag/1.0)** 
 **[<kbd><strong>&nbsp;<br>&nbsp;Screenshots&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/SCREENSHOTS.md)** 
 **[<kbd><strong>&nbsp;<br>&nbsp;Changelog&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/CHANGELOG.md)** 
 ---
+
+> [!IMPORTANT]
+> V1.1 doesn't work. Use 1.0 insteaad, until I fixed this weird mess
 
 # Setup (qBittorrent)
 
