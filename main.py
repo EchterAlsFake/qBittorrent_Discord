@@ -177,6 +177,9 @@ get asked for Username and Password. {Fore.RESET}
             else:
                 downloading = None
 
+            print(f"Uploading (Seeding) : {self.uploading}")
+            print(f"Downloading: {self.downloading}")
+
             self.client.update(details=f"qBittorrent: {self.qbt_client.app.version}", state=f"{uploading} | "
                                                                                             f"{downloading}",
                                large_image="qbittorrent",
@@ -184,6 +187,8 @@ get asked for Username and Password. {Fore.RESET}
                                    "https://github.com/EchterAlsFake/qbittorrent_Discord_RPC"}])  # can be removed
 
             time.sleep(int(self.update_delay))
+            self.uploading = 0
+            self.downloading = 0
 
     def settings(self):
         while True:
