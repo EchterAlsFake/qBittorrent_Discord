@@ -6,13 +6,21 @@
 </div>
 
 ---
-**[<kbd><strong>&nbsp;<br>&nbsp;Download (v1.0)&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/releases/tag/1.0)** 
+**[<kbd><strong>&nbsp;<br>&nbsp;Download (v1.0)&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/releases/tag/1.1)** 
 **[<kbd><strong>&nbsp;<br>&nbsp;Screenshots&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/SCREENSHOTS.md)** 
 **[<kbd><strong>&nbsp;<br>&nbsp;Changelog&nbsp;<br>&nbsp;</strong></kbd>](https://github.com/EchterAlsFake/qBittorrent_Discord/blob/master/README/CHANGELOG.md)** 
 ---
 
-> [!IMPORTANT]
-> V1.1 doesn't work. Use 1.0 insteaad, until I fixed this weird mess
+## **Features**
+- show amount of seeding torrents
+- show amount of uploading torrents
+- show amount of downloading torrents
+- show total share ration
+- show current download sped (mb/s)
+- show current upload speed (mb/s)
+
+Each option can be individually turned on and off.
+
 
 # Setup (qBittorrent)
 
@@ -22,8 +30,7 @@
 
 
 # Running the script
-The script will guide you through the configuration and save your input for further runs. Don't worry, you can 
-always change everything back in the settings menu.
+The script will guide you through the configuration and save your input for further runs.
 
 
 # Credits

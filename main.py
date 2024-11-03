@@ -1,21 +1,27 @@
-import configparser
-import sys
+import os.path
 import time
-import qbittorrentapi
 import getpass
 
+from io import TextIOWrapper
+from readline import set_completion_display_matches_hook
+
+from qbittorrentapi import Client
 from pypresence import Presence
-from colorama import *
 from configparser import ConfigParser
 
-z = f"{Fore.LIGHTGREEN_EX}[+]{Fore.RESET}"
 
 
 class QBittorrentDiscord:
     def __init__(self):
-        self.conf = ConfigParser()
-        self.conf.read("config.ini")
-        self.check_configuration_file()
+        self.show_upload_speed = None
+        self.show_download_speed = None
+        self.show_total_downloaded_gb = None
+        self.show_total_uploaded_gb = None
+        self.show_share_ratio = None
+        self.show_seeding = None
+        self.show_uploading = None
+        self.show_downloading = None
+        self.setup_config_file()
         self.application_id = "1176525076703744090"
         self.image = "qbittorrent"  # Image for the Discord Bot
         self.uploading = 0
@@ -25,23 +31,229 @@ class QBittorrentDiscord:
         self.password = None
         self.host = None
         self.port = None
+        self.conf = None
         self.qbt_client = None
         self.client = None
+        self.rpc = Presence(self.application_id)
+        self.rpc.connect()
+        self.load_configuration()
+        while True:
+            self.menu()
 
-        del self.conf
+
+    @staticmethod
+    def write_config_file():
+        data = """[Setup]
+username = None
+password = None
+host = None
+port = None
+setup_completed = false
+
+[Configuration]
+show_downloading = true
+show_uploading = true
+show_seeding = true
+show_share_ratio = true
+show_total_uploaded_gb = false
+show_total_downloaded_gb = false
+"""
+
+        with open("config.ini", "w") as configuration_file: #type: TextIOWrapper
+            configuration_file.write(data)
+
+
+    def setup_config_file(self):
+        if not os.path.isfile("config.ini"):
+            self.write_config_file()
+
         self.conf = ConfigParser()
         self.conf.read("config.ini")
-        self.discord()
-        self.server_configuration()
-        self.menu()
+
+        sections = ["Setup", "Configuration"]
+        options_setup = ["username", "password", "host", "port"]
+        options_configuration = ["show_downloading", "show_uploading", "show_seeding", "show_share_ratio",
+                                 "show_total_uploaded_gb", "show_total_downloaded_gb"]
+
+        for section in sections:
+            if not self.conf.has_section(section):
+                self.write_config_file()
+
+        for option in options_setup:
+            if not self.conf.has_option(section="Setup", option=option):
+                self.write_config_file()
+
+        for option in options_configuration:
+            if not self.conf.has_option(section="Configuration", option=option):
+                self.write_config_file()
+
+        if self.conf["Setup"]["setup_completed"] == "false":
+            self.setup_connection()
+            self.setup_discord_configuration()
+
+    def setup_connection(self):
+        print(f"""
+Make sure you have the qbittorrent Web UI enabled. If you are using the default settings you can just
+click enter on all options. If you want to also skip the password authentication you can enable 
+the option "Bypass authentication for clients on localhost" and then leave username and password empty.
+""")
+        host = input(f"Enter your qbittorrent Web UI host (IP) [localhost] -->:")
+        host = host if host else "localhost"
+        port = input(f"Enter your qbittorrent Web UI port [8080] -->:")
+        port = port if port else "8080"
+        username = input(f"Enter your username [skip authentication] -->")
+        password = input(f"Enter your password [skip authentication] -->")
+
+        self.conf.set("Setup", "host", host)
+        self.conf.set("Setup", "port", port)
+        self.conf.set("Setup", "username", username)
+        self.conf.set("Setup", "password", password)
+        self.conf.set("Setup", "setup_completed", "true")
+
+        with open("config.ini", "w") as conf: #type: TextIOWrapper
+            self.conf.write(conf)
+
+    def setup_discord_configuration(self):
+        print(f"""
+You can configure your Discord RPC now. This will affect what shows up in Discord, when you run this script
+""")
+        show_downloading = input(f"Do you want to show how many torrents you currently download? [true/false")
+        show_uploading = input(f"Doy you want to show many torrents you currently upload? [true/false]")
+        show_seeding = input(f"Do you want to show how many torrents you currently seed? [true/false]")
+        show_share_ration = input(f"Do you want to show your total share ration? [true/false]")
+        show_total_uploaded = input(f"Do you want to show how much you uploaded (in total)? [true/false")
+        show_total_downloaded = input(f"Do you want to show how much you downloaded (in total)? [true/false]")
+        show_upload_speed = input(f"Do you want to show your current upload speed? [true/false]")
+        show_download_speed = input(f"Do you want to show your current download speed? [true/false]")
+
+        self.conf.set("Configuration", "show_downloading", show_downloading)
+        self.conf.set("Configuration", "show_uploading", show_uploading)
+        self.conf.set("Configuration", "show_seeding", show_seeding)
+        self.conf.set("Configuration", "show_share_ration", show_share_ration)
+        self.conf.set("Configuration", "show_total_uploaded_gb", show_total_uploaded)
+        self.conf.set("Configuration", "show_total_downloaded_gb", show_total_downloaded)
+        self.conf.set("Configuration", "show_upload_speed", show_upload_speed)
+        self.conf.set("Configuration", "show_download_speed", show_download_speed)
+
+        with open("config.ini", "w") as conf: #type: TextIOWrapper
+            self.conf.write(conf)
+
+    def load_configuration(self):
+        self.conf = ConfigParser()
+        self.conf.read("config.ini")
+
+        self.username = self.conf["Setup"]["username"]
+        self.password = self.conf["Setup"]["password"]
+        self.host = self.conf["Setup"]["host"]
+        self.port = self.conf["Setup"]["port"]
+
+        self.show_downloading = bool(self.conf["Configuration"]["show_downloading"])
+        self.show_uploading = bool(self.conf["Configuration"]["show_uploading"])
+        self.show_seeding = bool(self.conf["Configuration"]["show_seeding"])
+        self.show_share_ratio = bool(self.conf["Configuration"]["show_share_ratio"])
+        self.show_total_uploaded_gb = bool(self.conf["Configuration"]["show_total_uploaded_gb"])
+        self.show_total_downloaded_gb = bool(self.conf["Configuration"]["show_total_downloaded_gb"])
+        self.show_download_speed = bool(self.conf["Configuration"]["show_download_speed"])
+        self.show_upload_speed = bool(self.conf["Configuration"]["show_upload_speed"])
+
+
+        self.client = Client(host=self.host, port=self.port, username=self.username, password=self.password)
+        self.client.auth_log_in()
+
+    def start(self):
+        while True:
+            qb = self.client
+            app_info = qb.app_version()
+            transfer_info = qb.transfer_info()
+            torrents_info = qb.torrents_info()
+
+            # Initialize counters and totals
+            downloading_count = 0
+            uploading_count = 0
+            seeding_count = 0
+            total_uploaded = 0
+            total_downloaded = 0
+            total_share_ratio = 0
+            torrents_with_ratio = 0
+
+            for torrent in torrents_info:
+                # Count torrents by state
+                if torrent.state == 'downloading':
+                    downloading_count += 1
+                elif torrent.state == 'uploading':
+                    uploading_count += 1
+                elif torrent.state == 'stalledUP':
+                    seeding_count += 1
+
+                total_uploaded += torrent.uploaded
+                total_downloaded += torrent.downloaded
+
+                if torrent.downloaded > 0:
+                    total_share_ratio += torrent.ratio
+                    torrents_with_ratio += 1
+
+            # Calculate averages and conversions
+            total_uploaded_gb = total_uploaded / (1024 ** 3)  # Convert to GB
+            total_downloaded_gb = total_downloaded / (1024 ** 3)  # Convert to GB
+            average_share_ratio = total_share_ratio / torrents_with_ratio if torrents_with_ratio else 0
+            total_share_ratio = total_uploaded_gb / total_downloaded_gb
+
+            # Current upload/download speeds in MB/s
+            upload_speed = transfer_info['up_info_speed'] / (1024 ** 2)  # Convert to MB/s
+            download_speed = transfer_info['dl_info_speed'] / (1024 ** 2)  # Convert to MB/s
+
+            # Print information
+            print(f"qBittorrent Version: {app_info}")
+            print(f"Torrents Downloading: {downloading_count}")
+            print(f"Torrents Uploading: {uploading_count}")
+            print(f"Torrents Seeding: {seeding_count}")
+            print(f"Average Share Ratio: {total_share_ratio:.2f}")
+            print(f"Total Uploaded: {total_uploaded_gb:.2f} GB")
+            print(f"Total Downloaded: {total_downloaded_gb:.2f} GB")
+            print(f"Current Upload Speed: {upload_speed:.2f} MB/s")
+            print(f"Current Download Speed: {download_speed:.2f} MB/s")
+
+            display_data = []
+
+            if self.show_downloading:
+                display_data.append(f"Downloading: {downloading_count}")
+            if self.show_uploading:
+                display_data.append(f"Uploading: {uploading_count}")
+            if self.show_seeding:
+                display_data.append(f"Seeding: {seeding_count}")
+            if self.show_share_ratio:
+                display_data.append(f"Ratio: {total_share_ratio:.2f}")
+            if self.show_total_uploaded_gb:
+                display_data.append(f"Uploaded: {total_uploaded_gb:.2f} GB")
+            if self.show_total_downloaded_gb:
+                display_data.append(f"Downloaded: {total_downloaded_gb:.2f} GB")
+            if self.show_upload_speed:
+                display_data.append(f"USpeed: {upload_speed:.2f} MB/s")
+            if self.show_download_speed:
+                display_data.append(f"DLSpeed: {download_speed:.2f} MB/s")
+
+            # Split display_data into details and state
+            details_data = " | ".join(display_data[:2])  # First two items
+            state_data = " | ".join(display_data[2:]) if len(display_data) > 2 else "No additional info"
+
+            # Update the Discord Rich Presence
+            self.rpc.update(
+                details = details_data,
+                state=state_data,
+                large_image="qbittorrent",
+                large_text=app_info
+            )
+            time.sleep(5)
 
     def menu(self):
         options = input(f"""
 1) Start
 2) Settings
 3) Credits
+
 99) Exit
----------------->:""")
+
+""")
 
         if options == "1":
             self.start()
@@ -53,190 +265,26 @@ class QBittorrentDiscord:
             self.credits()
 
         elif options == "99":
-            sys.exit(0)
+            exit(0)
 
-    def check_configuration_file(self):
-        sections = ["Server", "Discord"]
-        options_server = ["host", "port", "username", "password", "authentication"]
-        options_discord = ["show_uploads", "show_downloads", "update_delay"]
-
-        try:
-            for section in sections:
-                if self.conf.has_section(section) is False:
-                    self.write_configuration_file()
-
-            for option in options_server:
-                if self.conf.has_option(section="Server", option=option) is False:
-                    self.write_configuration_file()
-
-            for option in options_discord:
-                if self.conf.has_option(section="Discord", option=option) is False:
-                    self.write_configuration_file()
-
-        except (configparser.NoSectionError, configparser.NoOptionError):
-            self.write_configuration_file()
-
-    @classmethod
-    def write_configuration_file(cls):
-        default = """[Server]
-host = localhost
-port = 8080
-username = 
-password = 
-first_run = true
-
-[Discord]
-show_uploading = 1
-show_downloading = 1
-update_delay = 10"""
-
-        with open("config.ini", "w") as config_file:
-            config_file.write(default)
-
-    def server_configuration(self):
-        if self.conf.get("Server", "first_run") == "true":
-            print(
-                f"----------------------------{Fore.LIGHTYELLOW_EX}CONFIGURATION{Fore.RESET}"
-                f"-------------------------------------")
-            print(f"Please enter your credentials for the WebUI, you've configured in the qBittorrent Client.")
-
-            print(f"""
-{Fore.RED}Information:
-
-{Fore.LIGHTCYAN_EX}If you have enabled 'Bypass Authentication for localhost' in the WebUI, just press enter when you 
-get asked for Username and Password. {Fore.RESET}
-            """)
-
-            username = input(f"{z}Enter your username [Enter to skip authentication]: ")
-            password = getpass.getpass("Enter your password [None]: ")
-            host_input = input(f"{z}Enter webUI host [localhost]: ")
-            port_input = input(f"{z}Enter webUI port [8080]: ")
-            host = host_input if host_input else "localhost"
-            port = port_input if port_input else "8080"
-
-            self.conf.set("Server", "username", username)
-            self.conf.set("Server", "password", password)
-            self.conf.set("Server", "host", host)
-            self.conf.set("Server", "port", port)
-            self.conf.set("Server", "first_run", "false")
-            self.conf.set("Discord", "update_delay", "10")
-            self.update_delay = 10
-
-            with open("config.ini", "w") as config:
-                self.conf.write(config)
-                print("Wrote to configuration file")
-
-        else:
-            host = self.conf.get("Server", "host")
-            port = self.conf.get("Server", "port")
-            username = self.conf.get("Server", "username")
-            password = self.conf.get("Server", "password")
-            self.update_delay = self.conf.get("Discord", "update_delay")
-
-        conn_info = dict(
-            host=host,
-            port=port,
-            username=username,
-            password=password,
-        )
-
-        self.qbt_client = qbittorrentapi.Client(**conn_info)
-
-        try:
-            print(f"{z}Connecting to {host}:{port}...")
-            self.qbt_client.auth_log_in()
-            print(f"{z}Connected to {host}:{port}!")
-
-        except qbittorrentapi.LoginFailed as e:
-            print(f"Login failed: {e}, please check your credentials... Entering Settings")
-            self.settings()
-
-    def discord(self):
-        print(f"{z}Connecting to Discord...")
-        self.client = Presence(self.application_id)
-        self.client.connect()
-        print(f"{z}Connected to Discord :)")
-
-    def start(self):
-
-        while True:
-            # retrieve and show all torrents
-            for torrent in self.qbt_client.torrents_info():
-                if torrent.state == qbittorrentapi.TorrentState.UPLOADING:
-                    self.uploading += 1
-
-                elif torrent.state == qbittorrentapi.TorrentState.DOWNLOADING:
-                    self.downloading += 1
-
-            if self.conf.get("Discord", "show_uploading") == "1":
-                uploading = f"Uploading: {self.uploading}"
-
-            else:
-                uploading = None
-
-            if self.conf.get("Discord", "show_downloading") == "1":
-                downloading = f"Downloading: {self.downloading}"
-
-            else:
-                downloading = None
-
-            print(f"Uploading (Seeding) : {self.uploading}")
-            print(f"Downloading: {self.downloading}")
-
-            self.client.update(details=f"qBittorrent: {self.qbt_client.app.version}", state=f"{uploading} | "
-                                                                                            f"{downloading}",
-                               large_image="qbittorrent",
-                               buttons=[{"label": "Visit Project", "url":
-                                   "https://github.com/EchterAlsFake/qbittorrent_Discord_RPC"}])  # can be removed
-
-            time.sleep(int(self.update_delay))
-            self.uploading = 0
-            self.downloading = 0
 
     def settings(self):
-        while True:
-            options = input(f"""
-1) Change the server configuration
-2) Enable / Disable showing the amount of downloading torrents
-3) Enable / Disable showing the amount of uploading torrents
-4) Change update delay
+        options = input(f"""
+1) Change Server configuration
+2) Change Discord configuration
+3) Back""")
 
-99) Exit
-""")
+        if options == "1":
+            self.setup_connection()
 
-            try:
-                if options == "1":
-                    self.conf.set("Server", "first_run", "true")
-                    print(
-                        f"{z} Please restart the script. You will be prompted to enter the new server configuration...")
+        elif options == "2":
+            self.setup_discord_configuration()
 
-                elif options == "2":
-                    if self.conf.get("Discord", "show_downloading") == "1":
-                        self.conf.set("Discord", "show_downloading", "0")
+        elif options == "3":
+            self.menu()
 
-                    elif self.conf.get("Discord", "show_downloading") == "0":
-                        self.conf.set("Discord", "show_downloading", "1")
-
-                elif options == "3":
-                    if self.conf.get("Discord", "show_uploading") == "1":
-                        self.conf.set("Discord", "show_uploading", "0")
-
-                    elif self.conf.get("Discord", "show_uploading") == "0":
-                        self.conf.set("Discord", "show_uploading", "1")
-
-                elif options == "4":
-                    delay = input(f"{z} Please enter the new delay -->: ")
-                    self.conf.set("Discord", "update_delay", delay)
-
-                elif options == "99":
-                    self.menu()
-
-            finally:
-                with open("config.ini", "w") as config_file:
-                    self.conf.write(config_file)
-
-    @classmethod
-    def credits(cls):
+    @staticmethod
+    def credits():
         input(f"""
 
 qBittorrent Discord Integration
