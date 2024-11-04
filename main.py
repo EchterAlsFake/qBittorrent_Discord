@@ -1,10 +1,7 @@
 import os.path
 import time
-import getpass
 
 from io import TextIOWrapper
-from readline import set_completion_display_matches_hook
-
 from qbittorrentapi import Client
 from pypresence import Presence
 from configparser import ConfigParser
@@ -147,14 +144,14 @@ You can configure your Discord RPC now. This will affect what shows up in Discor
         self.host = self.conf["Setup"]["host"]
         self.port = self.conf["Setup"]["port"]
 
-        self.show_downloading = bool(self.conf["Configuration"]["show_downloading"])
-        self.show_uploading = bool(self.conf["Configuration"]["show_uploading"])
-        self.show_seeding = bool(self.conf["Configuration"]["show_seeding"])
-        self.show_share_ratio = bool(self.conf["Configuration"]["show_share_ratio"])
-        self.show_total_uploaded_gb = bool(self.conf["Configuration"]["show_total_uploaded_gb"])
-        self.show_total_downloaded_gb = bool(self.conf["Configuration"]["show_total_downloaded_gb"])
-        self.show_download_speed = bool(self.conf["Configuration"]["show_download_speed"])
-        self.show_upload_speed = bool(self.conf["Configuration"]["show_upload_speed"])
+        self.show_downloading = self.conf["Configuration"]["show_downloading"]
+        self.show_uploading = self.conf["Configuration"]["show_uploading"]
+        self.show_seeding = self.conf["Configuration"]["show_seeding"]
+        self.show_share_ratio = self.conf["Configuration"]["show_share_ratio"]
+        self.show_total_uploaded_gb = self.conf["Configuration"]["show_total_uploaded_gb"]
+        self.show_total_downloaded_gb = self.conf["Configuration"]["show_total_downloaded_gb"]
+        self.show_download_speed = self.conf["Configuration"]["show_download_speed"]
+        self.show_upload_speed = self.conf["Configuration"]["show_upload_speed"]
 
 
         self.client = Client(host=self.host, port=self.port, username=self.username, password=self.password)
@@ -215,21 +212,21 @@ You can configure your Discord RPC now. This will affect what shows up in Discor
 
             display_data = []
 
-            if self.show_downloading:
+            if self.show_downloading == "true":
                 display_data.append(f"Downloading: {downloading_count}")
-            if self.show_uploading:
+            if self.show_uploading == "true":
                 display_data.append(f"Uploading: {uploading_count}")
-            if self.show_seeding:
+            if self.show_seeding == "true":
                 display_data.append(f"Seeding: {seeding_count}")
-            if self.show_share_ratio:
+            if self.show_share_ratio == "true":
                 display_data.append(f"Ratio: {total_share_ratio:.2f}")
-            if self.show_total_uploaded_gb:
+            if self.show_total_uploaded_gb == "true":
                 display_data.append(f"Uploaded: {total_uploaded_gb:.2f} GB")
-            if self.show_total_downloaded_gb:
+            if self.show_total_downloaded_gb == "true":
                 display_data.append(f"Downloaded: {total_downloaded_gb:.2f} GB")
-            if self.show_upload_speed:
+            if self.show_upload_speed == "true":
                 display_data.append(f"USpeed: {upload_speed:.2f} MB/s")
-            if self.show_download_speed:
+            if self.show_download_speed == "true":
                 display_data.append(f"DLSpeed: {download_speed:.2f} MB/s")
 
             # Split display_data into details and state
