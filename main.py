@@ -71,7 +71,6 @@ show_total_downloaded_gb = false
         options_setup = ["username", "password", "host", "port"]
         options_configuration = ["show_downloading", "show_uploading", "show_seeding", "show_share_ratio",
                                  "show_total_uploaded_gb", "show_total_downloaded_gb"]
-
         for section in sections:
             if not self.conf.has_section(section):
                 self.write_config_file()
@@ -114,11 +113,11 @@ the option "Bypass authentication for clients on localhost" and then leave usern
         print(f"""
 You can configure your Discord RPC now. This will affect what shows up in Discord, when you run this script
 """)
-        show_downloading = input(f"Do you want to show how many torrents you currently download? [true/false")
-        show_uploading = input(f"Doy you want to show many torrents you currently upload? [true/false]")
+        show_downloading = input(f"Do you want to show how many torrents you currently download? [true/false]")
+        show_uploading = input(f"Do you want to show many torrents you currently upload? [true/false]")
         show_seeding = input(f"Do you want to show how many torrents you currently seed? [true/false]")
         show_share_ration = input(f"Do you want to show your total share ration? [true/false]")
-        show_total_uploaded = input(f"Do you want to show how much you uploaded (in total)? [true/false")
+        show_total_uploaded = input(f"Do you want to show how much you uploaded (in total)? [true/false]")
         show_total_downloaded = input(f"Do you want to show how much you downloaded (in total)? [true/false]")
         show_upload_speed = input(f"Do you want to show your current upload speed? [true/false]")
         show_download_speed = input(f"Do you want to show your current download speed? [true/false]")

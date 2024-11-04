@@ -1,3 +1,2 @@
 pypresence
-colorama
 qbittorrent-api
